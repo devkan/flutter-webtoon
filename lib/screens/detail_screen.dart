@@ -1,8 +1,9 @@
+import 'package:app/models/webtoon_detail_model.dart';
+import 'package:app/models/webtoon_episode_model.dart';
+import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 
-// 스크린은 그냥 위젯이라고 보면 된다.
-// Navigator를 통해 이곳으로 이동하게만 처리해 주면 된다.
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final String title, thumb, id;
 
   const DetailScreen({
@@ -11,6 +12,26 @@ class DetailScreen extends StatelessWidget {
     required this.thumb,
     required this.id,
   });
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  // Future<WebtoonDetailModel> webtoon = ApiService.getToonById(id);
+  // id에 "The instance member 'id' can't be accessed in an initializer." 이런 오류남
+  // webtoon(바로 위의) property 초기화할때 다른 property인 id에 대한 접근이 불가능해서 그렇다.
+  // 그래서 DetailScreen을 Stateless에서 Stateful로 변경했다.. ㅡ.ㅜ;
+  // 그리고 아래처럼 코드 변경을 함..
+  late Future<WebtoonDetailModel> webtoon;
+  late Future<List<WebtoonEpisodeModel>> episodes;
+
+  @override
+  void initState() {
+    super.initState();
+    webtoon = ApiService.getToonById(widget.id);
+    episodes = ApiService.getLatestEpisodeById(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +45,7 @@ class DetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.green,
         title: Text(
-          title,
+          widget.title,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w500,
@@ -40,7 +61,7 @@ class DetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Hero(
-                tag: id,
+                tag: widget.id,
                 child: Container(
                   width: 250,
                   clipBehavior: Clip.hardEdge,
@@ -54,11 +75,7 @@ class DetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // Image.network는 외부 이미지를 불러오는 메소드로 보면 된다.
-                  // Referer를 추가하지 않으면 naver정책에 의해 이미지를 가져오지 못한다.
-                  // HTTP request failed, statusCode: 403 오류가 발생한다.
-                  child: Image.network(thumb, headers: const {
+                  child: Image.network(widget.thumb, headers: const {
                     'User-Agent':
                         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
                     'Referer': 'https://comic.naver.com',
@@ -66,6 +83,36 @@ class DetailScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 25),
+          FutureBuilder(
+            future: webtoon,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        snapshot.data!.about,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        '${snapshot.data!.genre} / ${snapshot.data!.age}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return const Text("....");
+            },
           ),
         ],
       ),
