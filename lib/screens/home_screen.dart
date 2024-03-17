@@ -1,10 +1,7 @@
 import 'package:app/models/webtoon_model.dart';
 import 'package:app/services/api_service.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:app/widget/webtoon_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
 // json 데이타를 받기 위해서 stateless에서 stateful로 변경
 // stateful 방식에서 다시 stateless로 변경함
@@ -89,37 +86,10 @@ class HomeScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         //print(index);
         var webtoon = snapshot.data![index];
-        return Column(
-          children: [
-            Container(
-              width: 250,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 15,
-                    offset: const Offset(10, 10),
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                ],
-              ),
-
-              // Image.network는 외부 이미지를 불러오는 메소드로 보면 된다.
-              // Referer를 추가하지 않으면 naver정책에 의해 이미지를 가져오지 못한다.
-              // HTTP request failed, statusCode: 403 오류가 발생한다.
-              child: Image.network(webtoon.thumb, headers: const {
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-                'Referer': 'https://comic.naver.com',
-              }),
-            ),
-            const SizedBox(height: 10),
-            Text(webtoon.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                )),
-          ],
+        return Webtoon(
+          title: webtoon.title,
+          thumb: webtoon.thumb,
+          id: webtoon.id,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(width: 40),
