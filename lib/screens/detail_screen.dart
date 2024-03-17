@@ -39,28 +39,31 @@ class DetailScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 250,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 15,
-                      offset: const Offset(10, 10),
-                      color: Colors.black.withOpacity(0.3),
-                    ),
-                  ],
+              Hero(
+                tag: id,
+                child: Container(
+                  width: 250,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 15,
+                        offset: const Offset(10, 10),
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                    ],
+                  ),
+
+                  // Image.network는 외부 이미지를 불러오는 메소드로 보면 된다.
+                  // Referer를 추가하지 않으면 naver정책에 의해 이미지를 가져오지 못한다.
+                  // HTTP request failed, statusCode: 403 오류가 발생한다.
+                  child: Image.network(thumb, headers: const {
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+                    'Referer': 'https://comic.naver.com',
+                  }),
                 ),
-              
-                // Image.network는 외부 이미지를 불러오는 메소드로 보면 된다.
-                // Referer를 추가하지 않으면 naver정책에 의해 이미지를 가져오지 못한다.
-                // HTTP request failed, statusCode: 403 오류가 발생한다.
-                child: Image.network(thumb, headers: const {
-                  'User-Agent':
-                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-                  'Referer': 'https://comic.naver.com',
-                }),
               ),
             ],
           ),
