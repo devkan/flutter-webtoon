@@ -46,13 +46,22 @@ class HomeScreen extends StatelessWidget {
         future: webtoons,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView( // listview
-              children: [
-                for (var webtoon in snapshot.data!) Text(webtoon.title),
-                // error: A nullable expression can't be used as an iterator in a for-in loop.
-                // data!가 아니면 오류가 발생한다. data가 null일수도 있다고 dart가 알려주는 것이다.
-                // 하지만 hasData의 if문으로 이곳의 data는 null일 수가 없다. 그러니 !로 확실하는 것을 알려주는 것이다.
-              ],
+            return ListView.separated(
+              // ListView는 최적화되지 않은 것이라서 이것보다는 ListView.builder를 더 많이 사용한다.
+              // ListView.builder는 사용자가 보고 있는 아이템만 빌드하고, 안보면 메모리에서 제거한다.
+              // 그래서 item을 빌드할때마다 itemBuilder를 호출해서 사용한다.
+
+              scrollDirection: Axis.horizontal, // 수평 스크롤
+              itemCount: snapshot.data!.length, // 아이템 갯수
+              // data!가 아니면 오류가 발생한다. data가 null일수도 있다고 dart가 알려주는 것이다.
+              // 하지만 hasData의 if문으로 이곳의 data는 null일 수가 없다. 그러니 !로 확실하는 것을 알려주는 것이다.
+
+              itemBuilder: (context, index) {
+                //print(index);
+                var webtoon = snapshot.data![index];
+                return Text(webtoon.title);
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 20),
             );
           } else {
             return const Center(
