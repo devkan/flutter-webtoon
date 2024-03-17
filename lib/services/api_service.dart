@@ -1,10 +1,14 @@
+import 'dart:convert';
+
+import 'package:app/models/webtoon_model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
   final String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev/";
   final String today = "today";
 
-  void getTodaysToons() async {
+  Future<List<WebtoonModel>> getTodaysToons() async {
+    List<WebtoonModel> webtoonInstance = [];
     final url = Uri.parse('$baseUrl$today');
 
     //get(baseUrl);
@@ -18,9 +22,21 @@ class ApiService {
     // 그리고 return 타입이 Future 타입의 Response이다. "Future<Response>" Future타입은 비동기식으로 봐도 될듯
 
     if (response.statusCode == 200) {
-      print(response.body);
+      //print(response.body);
+      final List<dynamic> webtoons = jsonDecode(response.body);
+      // jsonDecode으로 반환되는 값들이 dynamic 타입이다. jsonDecode를 보면 된다. 이것을 List형태로 담으려고 하는 것이다.
 
-      return;
+      for (var webtoon in webtoons) {
+        //print(webtoon);
+
+        //final toon = WebtoonModel.fromJson(webtoon);
+        //print(toon.title);
+        // 테스트로 title 찍어볼때..
+
+        webtoonInstance.add(WebtoonModel.fromJson(webtoon));
+      }
+
+      return webtoonInstance;
     }
     throw Error();
   }
