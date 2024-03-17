@@ -24,6 +24,8 @@ class ApiService {
     if (response.statusCode == 200) {
       //print(response.body);
       final List<dynamic> webtoons = jsonDecode(response.body);
+      // final webtoons = jsonDecode(response.body);
+      // 이렇게 사용해도 문제없다.
       // jsonDecode으로 반환되는 값들이 dynamic 타입이다. jsonDecode를 보면 된다. 이것을 List형태로 담으려고 하는 것이다.
 
       for (var webtoon in webtoons) {
