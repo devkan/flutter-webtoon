@@ -1,7 +1,10 @@
 import 'package:app/screens/home_screen.dart';
+import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  ApiService().getTodaysToons(); // getTodaysToons 유닛 테스트
+
   runApp(const App());
 }
 
