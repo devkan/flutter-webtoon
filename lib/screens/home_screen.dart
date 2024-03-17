@@ -1,6 +1,9 @@
 import 'package:app/models/webtoon_model.dart';
 import 'package:app/services/api_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 // json 데이타를 받기 위해서 stateless에서 stateful로 변경
@@ -46,22 +49,20 @@ class HomeScreen extends StatelessWidget {
         future: webtoons,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView.separated(
-              // ListView는 최적화되지 않은 것이라서 이것보다는 ListView.builder를 더 많이 사용한다.
-              // ListView.builder는 사용자가 보고 있는 아이템만 빌드하고, 안보면 메모리에서 제거한다.
-              // 그래서 item을 빌드할때마다 itemBuilder를 호출해서 사용한다.
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
 
-              scrollDirection: Axis.horizontal, // 수평 스크롤
-              itemCount: snapshot.data!.length, // 아이템 갯수
-              // data!가 아니면 오류가 발생한다. data가 null일수도 있다고 dart가 알려주는 것이다.
-              // 하지만 hasData의 if문으로 이곳의 data는 null일 수가 없다. 그러니 !로 확실하는 것을 알려주는 것이다.
-
-              itemBuilder: (context, index) {
-                //print(index);
-                var webtoon = snapshot.data![index];
-                return Text(webtoon.title);
-              },
-              separatorBuilder: (context, index) => const SizedBox(width: 20),
+                // Expanded를 사용하지 않고, makeList(snapshot)를 사용하면
+                // Horizontal viewport was given unbounded height. 이런 에러를 발생시킨다.
+                // 이는 Column이 makeList()로 생성되는 ListView의 높이를 알수가 없기 때문이다.
+                // Expanded는 Row나 Column의 child를 확장해서 그 child가 남긴 공간을 채우기 때문에 사용한다.
+                Expanded(
+                  child: makeList(snapshot),
+                ),
+              ],
             );
           } else {
             return const Center(
@@ -70,6 +71,58 @@ class HomeScreen extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  ListView makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
+    return ListView.separated(
+      // ListView는 최적화되지 않은 것이라서 이것보다는 ListView.builder를 더 많이 사용한다.
+      // ListView.builder는 사용자가 보고 있는 아이템만 빌드하고, 안보면 메모리에서 제거한다.
+      // 그래서 item을 빌드할때마다 itemBuilder를 호출해서 사용한다.
+
+      scrollDirection: Axis.horizontal, // 수평 스크롤
+      itemCount: snapshot.data!.length, // 아이템 갯수
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      // data!가 아니면 오류가 발생한다. data가 null일수도 있다고 dart가 알려주는 것이다.
+      // 하지만 hasData의 if문으로 이곳의 data는 null일 수가 없다. 그러니 !로 확실하는 것을 알려주는 것이다.
+
+      itemBuilder: (context, index) {
+        //print(index);
+        var webtoon = snapshot.data![index];
+        return Column(
+          children: [
+            Container(
+              width: 250,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 15,
+                    offset: const Offset(10, 10),
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                ],
+              ),
+
+              // Image.network는 외부 이미지를 불러오는 메소드로 보면 된다.
+              // Referer를 추가하지 않으면 naver정책에 의해 이미지를 가져오지 못한다.
+              // HTTP request failed, statusCode: 403 오류가 발생한다.
+              child: Image.network(webtoon.thumb, headers: const {
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+                'Referer': 'https://comic.naver.com',
+              }),
+            ),
+            const SizedBox(height: 10),
+            Text(webtoon.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                )),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(width: 40),
     );
   }
 }
