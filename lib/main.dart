@@ -3,7 +3,9 @@ import 'package:app/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  ApiService().getTodaysToons(); // getTodaysToons 유닛 테스트
+  // getTodaysToons 유닛 테스트
+  //ApiService().getTodaysToons(); // static으로 되지 전
+  //ApiService.getTodaysToons(); // static으로 지정된 후
 
   runApp(const App());
 }

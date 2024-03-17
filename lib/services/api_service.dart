@@ -4,10 +4,16 @@ import 'package:app/models/webtoon_model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev/";
-  final String today = "today";
+  static const String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev/";
+  static const String today = "today";
+  /*
+  baseUrl, today는 final을 사용하다가, static const로 변경되었다. 밑의 getTodaysToons()는 static만 추가하고..
+  이는 해당 변수나 함수를 인스턴스화 없이 직접 클래스명을 통해 접근할 수 있게 해 주기 위함이다.
+  다시 말해 종속적인 객체를 만들면, 매번 호출시 객체로 만들어야 하는데, static으로 지정하면 객체를 생성하지 않고 바로 사용이 가능하다.
+  이것은 인스턴스의 상태를 유지할 필요가 없는 상수나 유틸리티 함수를 제공할 때 유용하다.
+  */
 
-  Future<List<WebtoonModel>> getTodaysToons() async {
+  static Future<List<WebtoonModel>> getTodaysToons() async {
     List<WebtoonModel> webtoonInstance = [];
     final url = Uri.parse('$baseUrl$today');
 
