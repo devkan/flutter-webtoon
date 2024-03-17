@@ -16,8 +16,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp( // 여기도 const 제거
       home: HomeScreen(),
+      // The constructor being called isn't a const constructor.
+      // home_screen에 Future 타입이 들어오면서 MaterialApp() const 제거
     );
   }
 }

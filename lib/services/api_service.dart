@@ -35,7 +35,7 @@ class ApiService {
       // jsonDecode으로 반환되는 값들이 dynamic 타입이다. jsonDecode를 보면 된다. 이것을 List형태로 담으려고 하는 것이다.
 
       for (var webtoon in webtoons) {
-        print(webtoon);
+        //print(webtoon);
 
         //final toon = WebtoonModel.fromJson(webtoon);
         //print(toon.title);
