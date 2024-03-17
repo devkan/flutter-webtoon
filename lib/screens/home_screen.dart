@@ -46,9 +46,18 @@ class HomeScreen extends StatelessWidget {
         future: webtoons,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const Text("data");
+            return ListView( // listview
+              children: [
+                for (var webtoon in snapshot.data!) Text(webtoon.title),
+                // error: A nullable expression can't be used as an iterator in a for-in loop.
+                // data!가 아니면 오류가 발생한다. data가 null일수도 있다고 dart가 알려주는 것이다.
+                // 하지만 hasData의 if문으로 이곳의 data는 null일 수가 없다. 그러니 !로 확실하는 것을 알려주는 것이다.
+              ],
+            );
           } else {
-            return const Text("loading...");
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),
